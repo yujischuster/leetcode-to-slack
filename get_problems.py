@@ -5,13 +5,12 @@ from slack import WebClient
 from slack.errors import SlackApiError
 import schedule
 import time
+from random import randrange
 
-response = requests.get("https://leetcode.com/api/problems/algorithms/")
-data = json.loads(response.content)
-
-def post_problem(problem):
-    webhook_url = 'https://hooks.slack.com/services/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'
-    output = { "text": "https://leetcode.com/problems/" + problem }
+def post_problem(all_problems):
+    slug = all_problems[randrange(len(all_problems))]  # choose random problem
+    webhook_url = 'https://hooks.slack.com/services/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'
+    output = { "text": "This week's warm-up problem: " + "https://leetcode.com/problems/" + slug }
     # post
     slack_response = requests.post(
         webhook_url, data=json.dumps(output),
@@ -23,12 +22,20 @@ def post_problem(problem):
             % (slack_response.status_code, slack_response.text)
         )
 
+# get data
+response = requests.get("https://leetcode.com/api/problems/algorithms/")
+data = json.loads(response.content)
+
+# filter-out premium ones, get slugs
+all_problems = []
 for problem in range(len(data["stat_status_pairs"])):
     if not data["stat_status_pairs"][problem]["paid_only"]:
-        while True:
-            schedule.run_pending()
-            time.sleep(1)
-        
-        problem_slug = data["stat_status_pairs"][problem]["stat"]["question__title_slug"]
-        schedule.every().tuesday.at("17:00").do(post_problem(problem_slug))
-        print("posted")
+        single_problem = data["stat_status_pairs"][problem]["stat"]["question__title_slug"]
+        all_problems.append(single_problem)
+
+# schedule job
+schedule.every().monday.at("10:00").do(post_problem, all_problems)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
