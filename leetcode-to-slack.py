@@ -9,7 +9,7 @@ from random import randrange
 
 def post_problem(all_problems):
     slug = all_problems[randrange(len(all_problems))]  # choose random problem
-    webhook_url = 'https://hooks.slack.com/services/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'
+    webhook_url = ""
     output = { "text": "This week's warm-up problem: " + "https://leetcode.com/problems/" + slug }
     # post
     slack_response = requests.post(
