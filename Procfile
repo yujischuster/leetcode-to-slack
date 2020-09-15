@@ -1,1 +1,1 @@
-web: python get_problems.py
+web: python server.py
