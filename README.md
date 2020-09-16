@@ -1,4 +1,4 @@
 # leetcode-to-slack
-automate warmup problem posting to slack channel
+automate posting of algorithm practice problems to slack channel
 
 Problems from https://leetcode.com/
